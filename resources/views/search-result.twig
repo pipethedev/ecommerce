@@ -1,0 +1,70 @@
+{% extends 'layouts/app' %}
+{% block title %}
+Search Results
+{% endblock %}
+
+{% block body %}
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Search Results</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="#">Search <span class="lnr lnr-arrow-right"></span></a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>   
+    <!-- start product Area -->
+    <section class="">
+        <!-- single product slide -->
+        <div class="">
+            <div class="container">
+                <div class="row">
+                    <!-- single product -->
+                {% for product in products %}
+                    <div class="col-lg-3 col-md-6">
+                        <div class="single-product" onclick="window.location.href='/shop/{{ product.slug }}'">
+                            <img class="img-fluid" src="{{ url('/') }}/storage/{{ product.image  }}" alt="">
+                            <div class="product-details" style="margin-left:10%;">
+                                <h6>{{ product.name }}</h6>
+                                <div class="price">
+                                    <h6>${{ product.price }}</h6>
+                                </div>
+                                <div class="prd-bottom">
+                                    <form action="{{ route('cart.store') }}" method="POST">
+                                        {{ csrf_field() }}
+                                            <input type="hidden" name="id" value="{{ product.id }}">
+                                            <input type="hidden" name="name" value="{{ product.name }}">
+                                            <input type="hidden" name="price" value="{{ product.price }}">
+                                            <input type="hidden" name="slug" value="{{ product.slug }}">
+                                        <button type="submit" class="btn btn-outline-primary">Add to Cart</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                </div>
+                        <div align="center">
+                    <div class="form-group text-center">
+                        <button  onclick="window.location.href='/shop' " style="border-radius:0px; background:#000; border:none;"class="btn btn-danger btn-lg text-white" role='button'>See More</button>
+                    </div>
+                    </div>
+        </div>
+            </div>
+        </div>
+        <!-- single product slide -->
+{#         <div class="single-product-slider" style="position:fixed;">
+            <div class="container">
+                <div class="form-group">
+                    <button class="btn btn-lg btn-default">SEE MORE</button>
+                </div>
+            </div>
+        </div> #}
+    </section>
+    <!-- end product Area -->
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'layouts.nav' %}
+{% block title %} My Profile {% endblock %}
+
+{% block body %}
+  <div class="wrapper ">
+    {% include 'includes.side' %}
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <a class="navbar-brand" href="javascript:;">User Profile</a>
+          </div>
+        </div>
+      </nav>
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="returning_customer">
+                    <div class="container">
+                            {% if app.session.get('success_message') %}
+                                <div class="alert alert-success">
+                                   {{ session('success_message') }}
+                                </div>
+                            {% endif %}
+                            {% if errors|length > 0 %}
+                                <div class="alert alert-danger">
+                                    <ul>
+                                {% for error in errors.all() %}
+                                    <li> {{ error }} </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div> 
+                            {% endif %}
+                    </div>
+              </div>
+              <div class="card">
+                <div class="card-header card-header-primary" style="background:#f0932b;">
+                  <h4 class="card-title">Edit Profile</h4>
+                  <p class="card-category">Complete your profile</p>
+                </div>
+                <div class="card-body">
+                  <form method="POST" action="{{ route('users.update') }}">
+                     {{ csrf_field() }}
+                     {{ method_field('patch') }}
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Full Name</label>
+                          <input type="text" class="form-control" name="name" value="{{ old('name', user.name) }}">
+                        </div>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Email Address</label>
+                          <input type="email" class="form-control" name="email" value="{{ old('email', user.email) }}">
+                        </div>
+                      </div>
+                      </div>
+                      <br>
+                      <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Password</label>
+                          <input type="password" class="form-control" name="password">
+                          <br>
+                          <span class="text-danger"> Leave Password Blank To Keep Current Password </span>
+                        </div>
+                      </div>
+                      <br>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Confirm Password</label>
+                          <input type="password" class="form-control" name="password_confirmation">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                    <button type="submit" class=" btn-block btn btn-primary pull-right" style="  background: #f0932b;">Update Profile</button>
+                    <div class="clearfix"></div>
+                   </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card card-profile">
+                <div class="card-avatar">
+                  <a href="javascript:;">
+                    <img class="img" src="../assets/img/faces/marc.jpg" />
+                  </a>
+                </div>
+                <div class="card-body">
+                  <h6 class="card-category text-gray">Customer</h6>
+                  <h4 class="card-title">{{ old('name', user.name) }}</h4>
+                  <p class="card-description">
+                    Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
+                  </p>
+                  <a href="javascript:;" class="btn btn-primary btn-round">Follow</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="fixed-plugin">
+    <div class="dropdown show-dropdown">
+      <a href="#" data-toggle="dropdown">
+        <i class="fa fa-cog fa-2x"> </i>
+      </a>
+      <ul class="dropdown-menu">
+        <li class="header-title"> Sidebar Filters</li>
+        <li class="adjustments-line">
+          <a href="javascript:void(0)" class="switch-trigger active-color">
+            <div class="badge-colors ml-auto mr-auto">
+              <span class="badge filter badge-purple" data-color="purple"></span>
+              <span class="badge filter badge-azure" data-color="azure"></span>
+              <span class="badge filter badge-green" data-color="green"></span>
+              <span class="badge filter badge-warning" data-color="orange"></span>
+              <span class="badge filter badge-danger" data-color="danger"></span>
+              <span class="badge filter badge-rose active" data-color="rose"></span>
+            </div>
+            <div class="clearfix"></div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

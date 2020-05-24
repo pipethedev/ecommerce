@@ -1,0 +1,327 @@
+{% extends 'layouts/app' %}
+{% block body %}
+    
+    <div class="preloader_body">
+        <divc class="init">
+            <div class="spinner"></div>
+        </div>
+    </d>
+
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Checkout</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="single-product.html">Checkout</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+
+    <!--================Checkout Area =================-->
+    <section class="checkout_area section_gap">
+        <div class="container">
+            <div class="returning_customer">
+                        <div class="container">
+            <div class="cart_inner">
+                {% if app.session.get('success_message') %}
+                        <div class="alert alert-success">
+                            {{ session('success_message') }}
+                        </div>
+                {% endif %}
+                {% if errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in errors.all() %}
+                                <li> {{ error }} </li>
+                            {% endfor %}
+                        </ul>
+                    </div> 
+                {% endif %}
+            </div>
+        </div>
+            </div>
+            <div class="cupon_area">
+                {% if session %}
+                    <div class="alert alert-success">
+                        You have applied a coupon
+                    </div>
+        {% else %}
+                <div class="check_title">
+                    <h2>Have a coupon?  enter your code</h2>
+                </div>
+
+
+                   
+              <form action="{{ route('coupon.store') }}" method="POST">
+                {{ csrf_field() }}
+                <input type="text" placeholder="Enter coupon code" name="coupon_code" id="coupon_code">
+                <button  class="tp_btn" style="border:none;" type="submit">Apply Coupon</button>
+            </form>                  
+                {% endif %}
+
+            </div>
+{#                                 <form method="POST" action="{{route('cash.offline')}}">
+                            <div class="payment_item">
+                                <div class="form-group">
+                                    {{ method_field('patch') }}
+                                    {{ csrf_field() }}
+                                    <button type='submit' class="btn-sm btn btn-default btn-block" type="submit" style="border:none;">Pay On Delivery</button>
+                                </div>
+                            </div>
+                             </form>  #}
+                        {#      Paying with Credit card #}
+ <form class="row contact_form"  method="POST" action="{{ route('pay') }}" id="paymentForm" >
+        {{ csrf_field() }}
+    <div class="billing_details">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h3>Billing Details</h3>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="first" name="firstname" 
+                                placeholder="First Name" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="last" name="lastname" placeholder="Last Name" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                            <input type="text" class="form-control" id="number" name="phonenumber" placeholder="Phone" required="">
+                            </div>
+                        {% if state == 'LOGOUT' %}
+                            <div class="col-md-12 form-group p_star">
+                           <input type="text" class="form-control" id="email" name="email" value="{{ email }}" required="">
+                            </div>
+                        {% else %}
+                            <div class="col-md-12 form-group p_star">
+                                <input type="email" class="form-control" id="email" value ="{{ email }}" 
+                                placeholder="Email Adress" required="">
+                            </div>
+                        {% endif %}
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" name="address" class="form-control" placeholder="Address" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" name="province" class="form-control" placeholder="Local Government Area" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" name="country" class="form-control" placeholder="Country" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="city" name="city" placeholder="City" required="">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="zip" name="zip" placeholder="Postcode/ZIP" required="">
+                            </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="order_box">
+                            <h2>Your Order</h2>
+                            <ul class="list">
+                        {% for content in contents %}
+                            <li>
+                            <a href="#">{{ content.name }}<span class="middle">x 0{{ content.qty }}</span> 
+                             <span class="last">NGN {{ content.price}}</span></a>
+                            </li>
+                        {% endfor %}
+                        {% if session %}
+                            <li><a href="#">Coupon<span>- NGN {{ sessionName }}</span></a></li>         
+                        {% endif %}
+                            </ul>
+                            <ul class="list list_2">
+                            {% if session %}
+                             <li><a href="#">Subtotal <span>NGN {{ newSubtotal }}</span></a></li>
+                             <input type="hidden" name="subtotal" value="{{ newSubtotal }}">
+                            {% else %}
+                            <li><a href="#">Subtotal <span>NGN {{ subtotal }}</span></a></li>
+                            <input type="hidden" name="subtotal" value="{{ subtotal }}">
+                            {% endif %}
+                            <li><a href="#">Shipping <span>NGN 50.00</span></a></li>
+                            {% if session %}
+                            <li><a href="">Tax <span>{{ newTax }}</span></a></li>
+                            <input type="hidden" name="tax" value="{{ newTax }}">
+                           {% else %}
+                            <li><a href="">Tax <span>{{ newTax }}</span></a></li>
+                            <input type="hidden" name="tax" value="{{ newTax }}">
+                           {% endif %}
+                            {% if session %}
+                            <li><a href="#">Total <span>NGN {{ newTotal }}</span></a></li>
+                            <input type="hidden" name="amount" value="{{ newTotal }}" />
+                            {% else %}
+                            <li><a href="#">Total <span>NGN {{ total }}</span></a></li>
+                            <input type="hidden" name="amount" value="{{ total }}" />
+                            {% endif %}
+                            </ul>
+                        <input type="hidden" name="payment_method" value="both" />
+                        <input type="hidden" name="description" value="Ecommerce Purchase" />
+                        <input type="hidden" name="country" value="NG" />
+                        <input type="hidden" name="currency" value="NGN" />
+                        <input type="hidden" name="metadata" value="{{ allcontents }}" >
+    <br>
+    <div class="creat_account">
+        <input type="checkbox" id="f-option4" name="selector">
+        <label for="f-option4">I’ve read and accept the </label>
+        <a href="#">terms and conditions*</a>
+    </div>
+  <button type="submit" style='border:none;' name="pay_now" id="pay-now" class='btn-block primary-btn' title="Pay now">Pay with card</button><br>
+</form>
+    {#      Paying with Cash #}
+
+{% if session %}
+                           <form method="POST" action="{{route('coupon.destroy')}}">
+                            <div class="payment_item">
+                                <div class="form-group">
+                                    {{ csrf_field() }}
+                                    {{ method_field('delete')}}
+                                    <button type='submit' class="btn-sm btn btn-default btn-block" type="submit" style="border:none;">Remove Coupon</button>
+                                </div>
+                            </div>
+                                </form> 
+{% endif %}
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <form style="display:none;" class="row contact_form"  method="POST" action="{{ route('cash.offline') }}" id="paymentCash">
+                {{ method_field('patch')}}
+        {{ csrf_field() }}
+    <div class="billing_details">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h3>Billing Details</h3>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="first" name="firstname" 
+                                placeholder="First Name" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="last" name="lastname" placeholder="Last Name" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                            <input type="text" class="form-control" id="number" name="phonenumber" placeholder="Phone" required="">
+                            </div>
+                        {% if state == 'LOGOUT' %}
+                            <div class="col-md-12 form-group p_star">
+                           <input type="text" class="form-control" id="email" name="email" value="{{ email }}" required="">
+                            </div>
+                        {% else %}
+                            <div class="col-md-12 form-group p_star">
+                                <input type="email" class="form-control" id="email" value ="{{ email }}" 
+                                placeholder="Email Adress" required="">
+                            </div>
+                        {% endif %}
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" name="address" class="form-control" placeholder="Address" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" name="province" class="form-control" placeholder="Local Government Area" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" name="country" class="form-control" placeholder="Country" required="">
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="city" name="city" placeholder="City" required="">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="zip" name="zip" placeholder="Postcode/ZIP" required="">
+                            </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="order_box">
+                            <h2>Your Order</h2>
+                            <ul class="list">
+                        {% for content in contents %}
+                            <li>
+                            <a href="#">{{ content.name }}<span class="middle">x 0{{ content.qty }}</span> 
+                             <span class="last">${{ content.price}}</span></a>
+                            </li>
+                        {% endfor %}
+                        {% if session %}
+                            <li><a href="#">Coupon<span>- $ {{ sessionName }}</span></a></li>         
+                        {% endif %}
+                            </ul>
+                            <ul class="list list_2">
+                            {% if session %}
+                             <li><a href="#">Subtotal <span>${{ newSubtotal }}</span></a></li>
+                             <input type="hidden" name="subtotal" value="{{ newSubtotal }}">
+                            {% else %}
+                            <li><a href="#">Subtotal <span>${{ subtotal }}</span></a></li>
+                            <input type="hidden" name="subtotal" value="{{ subtotal }}">
+                            {% endif %}
+                            <li><a href="#">Shipping <span>$50.00</span></a></li>
+                            {% if session %}
+                            <li><a href="">Tax <span>{{ newTax }}</span></a></li>
+                            <input type="hidden" name="tax" value="{{ newTax }}">
+                           {% else %}
+                            <li><a href="">Tax <span>{{ newTax }}</span></a></li>
+                            <input type="hidden" name="tax" value="{{ newTax }}">
+                           {% endif %}
+                            {% if session %}
+                            <li><a href="#">Total <span>${{ newTotal }}</span></a></li>
+                            <input type="hidden" name="amount" value="{{ newTotal }}" />
+                            {% else %}
+                            <li><a href="#">Total <span>${{ total }}</span></a></li>
+                            <input type="hidden" name="amount" value="{{ total }}" />
+                            {% endif %}
+                            </ul>
+    <input type="hidden" name="payment_method" value="both" />
+    <input type="hidden" name="description" value="Ecommerce Purchase" />
+    <input type="hidden" name="country" value="NG" />
+    <input type="hidden" name="currency" value="NGN" />
+    <input type="hidden" name="metadata" value="{{ allcontents }}" >
+    <br>
+    <div class="creat_account">
+        <input type="checkbox" id="f-option4" name="selector">
+        <label for="f-option4">I’ve read and accept the </label>
+        <a href="#">terms and conditions*</a>
+    </div>
+  <button type="submit" style='border:none;' name="pay_now" id="pay-now" class='btn-block primary-btn' title="Pay now">Pay with cash</button><br>
+</form>
+        </div>
+    </section>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="border:none; border-radius:0px;">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Select Payment Method</h5> 
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+   </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="form-group">
+                <button class="btn-block btn btn-primary btn-lg text-dark text-center" style="border-radius:0px; border:none;background:#fff;"  data-dismiss="modal" aria-label="Close"><img height="40" src="{{ asset('img/mastercard.svg')}}" class="float-left"><span class="text-center mr-4">Pay with Card</span></button>
+            </div>
+            <hr>
+            <div class="form-group">
+                <button class="btn-block btn btn-primary btn-lg text-dark text-center" style="border-radius:0px; border:none;background:#fff;" id="cash" data-dismiss="modal" aria-label="Close"><img height="40" src="{{ asset('img/money.svg')}}" class="float-left"><span class="text-center mr-4">Pay with Cash</span></button>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+</div> 
+    <!--================End Checkout Area =================-->
+<script src="{{asset('js/vendor/jquery-2.2.4.min.js')}}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#exampleModal').modal({
+        backdrop: 'static'
+    });
+        $("#exampleModal").modal('show');
+    });
+</script>
+{% endblock %}

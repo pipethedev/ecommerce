@@ -1,0 +1,272 @@
+{% extends 'layouts/app' %}
+{% block body %}
+
+    <div class="preloader_body">
+        <divc class="init">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+<section class="banner-area organic-breadcrumb">
+<div class="container">
+<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+<div class="col-first">
+<h1>Shopping Cart</h1>
+<nav class="d-flex align-items-center">
+<a href="{{ route('index') }}">Home<span class="lnr lnr-arrow-right"></span></a>
+<a href="category.html">Cart</a>
+</nav>
+</div>
+</div>
+</div>
+</section>
+{% if count > 0 %}
+
+<section class="cart_area">
+<div class="container">
+<div class="cart_inner">
+<div class="table-responsive">
+  {% if session %}
+    <div class="alert alert-success">
+      You have applied a coupon
+    </div>
+  {% endif %}
+<table class="table">
+<thead>
+<tr>
+<th scope="col">Product</th>
+<th scope="col">Price</th>
+<th scope="col">Quantity</th>
+<th scope="col">Total</th>
+</tr>
+</thead>
+<tbody>
+              <div class="returning_customer">
+                        <div class="container">
+            <div class="cart_inner">
+                {% if app.session.get('success_message') %}
+                        <div class="alert alert-success">
+                            {{ session('success_message') }}
+                        </div>
+                {% endif %}
+                {% if errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in errors.all() %}
+                                <li> {{ error }} </li>
+                            {% endfor %}
+                        </ul>
+                    </div> 
+                {% endif %}
+            </div>
+        </div>
+            </div>
+{# Start products #}
+  {% for content in contents %}
+<tr>
+<td>
+<div class="media">
+<div class="d-flex">
+<img src="{{ url('/') }}/storage/{{ content.image }}" alt="">
+</div>
+<div class="media-body">
+<p>{{ content.name }}</p><br>
+<div class="icon_group">
+<div style="display:inline; width:100%;">
+  <div  style="display:inline;">
+    <form style="display:inline;" method="POST" action="{{ url('/') }}/cart/switchToSaveForLater/{{ content.rowId }}" style="margin-top:1rem;">
+        <input name="_token" type="hidden" value="{{ csrf_token() }}">
+        <input type="hidden" name="slug" value="{{ content.options.slug }}">
+        <button  class="material-icons" type="submit" style="color:#6c5ce7; border:none; background:transparent;">favorite</button>
+    </form>
+  </div>
+    <div style="display:inline;">
+  {#   <i class="material-icons">remove_circle</i> #}
+    <form style="display:inline;" method="POST" action="{{ url('/') }}/cart/{{ content.rowId }}">
+        <input name="_token" type="hidden" value="{{ csrf_token() }}">
+        <input name="_method" type="hidden" value="DELETE">
+        <button type="submit" style="border:none; background:transparent; color:#00b894;" class="material-icons">remove_circle</button>
+    </form>
+  </div>
+</div>
+</div>
+
+</div>
+</div>
+</td>
+<td>
+<h5>NGN {{ content.price }}</h5>
+</td>
+<td>
+<div class="product_count">
+<div class="form-group">
+  <select class="quantity" data-id= '{{ content.rowId }}' data-productSlug ='{{ content.options.slug }}'>
+
+ {% set k = 5 %}
+{% for i in range(1, k) %}
+    <option {{ content.qty == i  ? 'selected' : '' }}>{{ i }}</option>
+{% endfor %}
+  </select>
+</div>
+</div>
+</td>
+<td>
+<h5>NGN {{ content.subtotal }}</h5>
+</td>
+</tr>
+{% endfor %}
+
+{# End products #}
+<tr class="bottom_button">
+<td>
+{# <a class="gray_btn" href="#">Update Cart</a> #}
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+<div class="cupon_text d-flex align-items-center">
+{% if session %}
+<form action="{{ route('coupon.destroy') }}" method="POST">
+  {{ csrf_field() }}
+ {{ method_field('delete')}}
+<button class="primary-btn" style="border:none;" type="submit">Remove Coupon</button>
+</form>
+{% else %}
+<form action="{{ route('coupon.store') }}" method="POST">
+  {{ csrf_field() }}
+<input type="text" placeholder="Coupon Code" name="coupon_code">
+<button class="primary-btn" style="border:none;" type="submit">Apply</button>
+</form>
+{% endif %}
+</div>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+<h5>Subtotal</h5>
+</td>
+<td>
+{% if session %}
+<h5>NGN {{ newSubtotal }}</h5>
+    {% else %}
+<h5>NGN {{ subtotal }}</h5>
+{% endif %}
+</td>
+
+</tr>
+<tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+<h5>Tax</h5>
+</td>
+<td>
+<h5>NGN {{ tax }}</h5>
+</td>
+
+</tr>
+
+<tr class="out_button_area">
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+<div class="checkout_btn_inner d-flex align-items-center">
+<a class="gray_btn" href="{{ route('shop.index') }}">Continue Shopping</a>
+{% if state == 'LOGOUT' %}
+<a class="primary-btn" href="{{ route('checkout.index') }}">Proceed to checkout</a>
+{% else %}
+  <a class="primary-btn" href="{{ route('guestCheckout.index') }}">Proceed to checkout</a>
+{% endif %}
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+{% else %}
+
+      <br>
+<div  align="center">
+                    <p>No items in the cart</p>
+                <div>
+                    <button class="btn btn-primary btn-lg" style="border:none; border-radius:0px; background: #000;">Continue Shopping</button>
+                </div>
+  </div>
+        <br>
+
+
+
+{% endif %}
+  {% if savedItems|length > 0 %}
+    <div class="container">
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Name</th>
+      <th scope="col">Action</th>
+      <th scope="col">Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for saved in savedItems %}
+        <tr>
+      <th scope="row">{{ saved.id }}</th>
+      <td>{{ saved.name }}</td>
+      <td>                          
+        <form method="POST" action="{{ url('/')}} /saveForLater/{{ saved.rowId }} ">
+             {{ csrf_field() }}
+             {{ method_field('DELETE') }}
+              <button type="submit" style="border:none;">Remove</button>
+        </form>
+        <form method="POST" action="{{ url('/') }}/saveForLater/switchToSaveForLater/{{ saved.rowId }}" style="margin-top:1rem;">
+            <input name="_token" type="hidden" value="{{ csrf_token() }}">
+            <button type="submit" style="border:none;">Move to Cart</button>
+       </form></td>
+      <td>$ {{ saved.price }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+const classname = $('select');
+Array.from(classname).forEach(function(element){
+$(document).ready(function(){
+    $(element).change(function(){
+      const id = element.getAttribute('data-id');
+      const productSlug = element.getAttribute('data-productSlug');
+  
+      axios.patch(`/cart/${id}`,{
+        quantity : this.value,
+        productSlug : productSlug
+      }).then(function(response){
+        console.log(response)
+        window.location.href = '{{ route("cart.index") }}';
+      }).catch(function(error){
+       window.location.href = '{{ route("cart.index") }}';
+      });
+    });
+})
+});
+</script>
+{% endblock %}
